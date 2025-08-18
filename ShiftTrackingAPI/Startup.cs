@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using ShiftTrackingAPI.Helpers;
 using ShiftTrackingAPI.Helpers.SQL;
+using System.Text.Json.Serialization;
 
 namespace ShiftTrackingAPI
 {
@@ -22,11 +24,16 @@ namespace ShiftTrackingAPI
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             services.AddDbContext<AppDbContext>(options => options.UseSqlite("Data Source=ShiftTracking.db"));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ShiftTrackingAPI", Version = "v1" });
+                c.UseAllOfToExtendReferenceSchemas();
+                c.SchemaFilter<JsonConverterDisplayName>(); // Кастомный фильтр (см. ниже)
             });
         }
 
