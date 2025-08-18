@@ -33,7 +33,7 @@ namespace ShiftTrackingAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ShiftTrackingAPI", Version = "v1" });
                 c.UseAllOfToExtendReferenceSchemas();
-                c.SchemaFilter<JsonConverterDisplayName>(); // Кастомный фильтр (см. ниже)
+                c.SchemaFilter<JsonConverterDisplayName>();
             });
         }
 

@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace ShiftTrackingAPI.Helpers
 {
+    /// <summary>
+    /// кастомный метод вывода строковых значений из enum
+    /// </summary>
     public class JsonConverterDisplayName: ISchemaFilter
     {
         public void Apply(OpenApiSchema schema, SchemaFilterContext context)
