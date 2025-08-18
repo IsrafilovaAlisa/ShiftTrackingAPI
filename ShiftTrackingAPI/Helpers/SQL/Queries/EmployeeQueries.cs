@@ -23,5 +23,26 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                     Position = e.Position
                 }).ToListAsync();
         } 
+        public static async Task<EmployeeDTO> CreateEmployee(AppDbContext context, EmployeeDTO obj)
+        {
+            var newEmployee = new Employee
+            {
+                LastName = obj.LastName,
+                FirstName = obj.FirstName,
+                MiddleName = obj.MiddleName,
+                Position = obj.Position
+            };
+            context.employees.Add(newEmployee);
+            await context.SaveChangesAsync();
+            return new EmployeeDTO
+            {
+                Id = newEmployee.Id,
+                LastName = newEmployee.LastName,
+                FirstName = newEmployee.FirstName,
+                MiddleName = newEmployee.MiddleName,
+                Position= newEmployee.Position
+            };
+
+        }
     }
 }
