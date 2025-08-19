@@ -45,6 +45,15 @@ namespace ShiftTrackingAPI.Controllers
             }
             return Ok(new { data = await EmployeeQueries.CreateEmployee(context, obj) });
         }
-        
+        [HttpPut("UpdateEmployee")]
+        public async Task<IActionResult> UpdateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj, [FromQuery]long id)
+        {
+            var data = await EmployeeQueries.UpdateEmployee(context, obj, id);
+            if (string.IsNullOrWhiteSpace(obj.LastName) || string.IsNullOrWhiteSpace(obj.FirstName) || !Enum.IsDefined(typeof(Position), obj.Position) || data == null)
+            {
+                return BadRequest(new { error = "Неверно введены данные" });
+            }
+            return Ok(new { data });
+        }
     }
 }

@@ -44,5 +44,28 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
             };
 
         }
+        public static async Task<EmployeeDTO> UpdateEmployee(AppDbContext context, EmployeeDTO obj, long id)
+        {
+            //можно было бы сделать sql и объединить методы апдейт и добавления сотрудника , предварительно проверив на существующий айдишник((
+            var existingEmployee = await context.employees.FindAsync(id);
+            if (existingEmployee == null)
+            {
+                return null;
+            }
+
+            existingEmployee.LastName = obj.LastName;
+            existingEmployee.FirstName = obj.FirstName;
+            existingEmployee.MiddleName = obj.MiddleName;
+            existingEmployee.Position = obj.Position;
+
+            await context.SaveChangesAsync();
+            return new EmployeeDTO
+            {
+                LastName = existingEmployee.LastName,
+                FirstName = existingEmployee.FirstName,
+                MiddleName = existingEmployee.MiddleName,
+                Position = existingEmployee.Position
+            };
+        }
     }
 }
