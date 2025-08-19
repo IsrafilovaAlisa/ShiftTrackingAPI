@@ -2,6 +2,7 @@
 using ShiftTrackingAPI.Helpers;
 using ShiftTrackingAPI.Helpers.SQL;
 using ShiftTrackingAPI.Helpers.SQL.Queries;
+using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
 using System.Threading.Tasks;
@@ -52,6 +53,11 @@ namespace ShiftTrackingAPI.Controllers
                     default: return BadRequest();
                 }
             }
+        }
+        [HttpGet("GetStatisticViolation")]
+        public async Task<IActionResult> GetStatisticViolation([FromServices] AppDbContext context, [FromQuery] Employee obj)
+        {
+            return Ok(new { data = StatisticQueries.CalculateViolationsThisMonth(context, obj) });
         }
     }
 }
