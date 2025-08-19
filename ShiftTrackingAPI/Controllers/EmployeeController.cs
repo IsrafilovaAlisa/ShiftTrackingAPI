@@ -4,6 +4,7 @@ using ShiftTrackingAPI.Helpers.SQL.Queries;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 #nullable enable
 namespace ShiftTrackingAPI.Controllers
@@ -30,6 +31,11 @@ namespace ShiftTrackingAPI.Controllers
             var result = await EmployeeQueries.GetEmployee(context, position);
             return Ok(new { data = result });
         }
+        [HttpGet("Positions")]
+        public ActionResult<IEnumerable<string>> GetPositions()
+        {
+            return Ok(Enum.GetNames(typeof(Position)));
+        }
         [HttpPost("CreateEmployee")]
         public async Task<IActionResult> CreateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj)
         {
@@ -39,5 +45,6 @@ namespace ShiftTrackingAPI.Controllers
             }
             return Ok(new { data = await EmployeeQueries.CreateEmployee(context, obj) });
         }
+        
     }
 }
