@@ -8,5 +8,6 @@ namespace ShiftTrackingAPI.Models.DTO
         public long EmployeeId { get; set; }
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }
+        public double? WorkTime { get; set; }
     }
 }

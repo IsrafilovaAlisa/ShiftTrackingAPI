@@ -43,9 +43,40 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 Id = newShift.Id,
                 EmployeeId = newShift.EmployeeId,
                 From = newShift.From,
-                To = null
+                To = null,
+                WorkTime= null
             };
         }
-       
+        public static async Task<ShiftDTO> EndShift(AppDbContext context, long id, DateTime time)
+        {
+            var employee = await context.employees
+                .Include(e => e.shifts)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (employee == null)
+            {
+                throw new CustomException(ErrorType.NotFound);
+            }
+
+            var activeShift = employee.shifts.FirstOrDefault(s => s.To == null);
+
+            if (activeShift == null)
+            {
+                throw new CustomException(ErrorType.DateIncorrect);
+            }
+
+            activeShift.To = time;
+
+            await context.SaveChangesAsync();
+
+            return new ShiftDTO
+            {
+                Id = activeShift.Id,
+                EmployeeId = id,
+                From = activeShift.From,
+                To = activeShift.To,
+                WorkTime = (activeShift.To - activeShift.From)?.TotalHours
+            };
+        }
     }
 }

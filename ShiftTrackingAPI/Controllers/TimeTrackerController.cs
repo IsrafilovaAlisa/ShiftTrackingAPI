@@ -35,6 +35,23 @@ namespace ShiftTrackingAPI.Controllers
                 }
             }
         }
-        
+        [HttpPost("EndShift")]
+        public async Task<IActionResult> EndFinish([FromServices]AppDbContext context, long id, TimestampDTO time)
+        {
+            try
+            {
+                var data = await ShiftQueries.EndShift(context, id, time.Timestamp);
+                return Ok(data);
+            }
+            catch (CustomException ex)
+            {
+                switch (ex.Type)
+                {
+                    case ErrorType.NotFound: return BadRequest(new { error = "Неверно введен номер сотрудника" });
+                    case ErrorType.DateIncorrect: return BadRequest(new { error = "У сотрудника не введено начало смены" });
+                    default: return BadRequest();
+                }
+            }
+        }
     }
 }
