@@ -55,5 +55,15 @@ namespace ShiftTrackingAPI.Controllers
             }
             return Ok(new { data });
         }
+        [HttpDelete("DeleteEmployee")]
+        public async Task<IActionResult> DeleteEmployee([FromServices] AppDbContext context, [FromQuery] long id)
+        {
+            var data = await EmployeeQueries.DeleteEmployee(context, id);
+            if(data == null)
+            {
+                return BadRequest(new { error = "Сотрудника в списке нет" });
+            }
+            return Ok(new { data });
+        }
     }
 }

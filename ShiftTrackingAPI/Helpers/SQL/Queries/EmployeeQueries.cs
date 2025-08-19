@@ -67,5 +67,16 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 Position = existingEmployee.Position
             };
         }
+        public static async Task<string> DeleteEmployee(AppDbContext context, long id)
+        {
+            var existingEmployee = await context.employees.FindAsync(id);
+            if (existingEmployee == null)
+            {
+                return null;
+            }
+            context.employees.Remove(existingEmployee);
+            await context.SaveChangesAsync();
+            return "Сотрудник удалёне";
+        }
     }
 }
