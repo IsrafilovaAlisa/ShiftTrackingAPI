@@ -59,6 +59,8 @@ namespace ShiftTrackingAPI
                     // Если перавя миграция не применена - применяем все миграции
                     context.Database.Migrate();
                 }
+                ///генерируем данные
+                DataGenerator.Initialize(context);
             }
             catch (Exception ex)
             {
