@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,20 +10,48 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
 {
     public static class EmployeeQueries
     {
-        public static async Task<List<EmployeeDTO>> GetEmployee(AppDbContext context, Position? position)
+        //public static async Task<List<EmployeeDTO>> GetEmployee(AppDbContext context, Position? position)
+        //{
+        //    var query = context.employees.AsNoTracking();
+        //    return await query
+        //        .Where(e => position == null || e.Position == position)
+        //        .Select(e => new EmployeeDTO
+        //        {
+        //            Id = e.Id,
+        //            LastName = e.LastName,
+        //            FirstName = e.FirstName,
+        //            MiddleName = e.MiddleName,
+        //            Position = e.Position
+        //        }).ToListAsync();
+        //}
+        public static async Task<List<ViolationEmployeeDTO>> GetEmployee(AppDbContext context, Position? position)
         {
-            var query = context.employees.AsNoTracking();
-            return await query
-                .Where(e => position == null || e.Position == position)
-                .Select(e => new EmployeeDTO
-                {
-                    Id = e.Id,
-                    LastName = e.LastName,
-                    FirstName = e.FirstName,
-                    MiddleName = e.MiddleName,
-                    Position = e.Position
-                }).ToListAsync();
-        } 
+            var employees = await context.employees
+        .Include(e => e.shifts)
+        .AsNoTracking()
+        .Where(e => position == null || e.Position == position)
+        .Select(e => new
+        {
+            Employee = e,
+            Shifts = e.shifts
+        })
+        .ToListAsync();
+
+            var currentMonth = DateTime.Now.Month;
+            var currentYear = DateTime.Now.Year;
+
+            return employees.Select(e => new ViolationEmployeeDTO
+            {
+                Id = e.Employee.Id,
+                LastName = e.Employee.LastName,
+                FirstName = e.Employee.FirstName,
+                MiddleName = e.Employee.MiddleName,
+                Position = e.Employee.Position,
+                Violations = e.Shifts
+                    .Where(s => s.From.Month == currentMonth && s.From.Year == currentYear)
+                    .Count(shift => Violation.IsViolation(shift, e.Employee.Position))
+            }).ToList();
+        }
         public static async Task<EmployeeDTO> CreateEmployee(AppDbContext context, EmployeeDTO obj)
         {
             var newEmployee = new Employee
