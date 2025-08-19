@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShiftTrackingAPI.Helpers;
 using ShiftTrackingAPI.Helpers.SQL;
+using ShiftTrackingAPI.Helpers.SQL.Queries;
+using ShiftTrackingAPI.Models.DTO;
+using System;
+using System.Threading.Tasks;
 
 namespace ShiftTrackingAPI.Controllers
 {
@@ -12,5 +17,24 @@ namespace ShiftTrackingAPI.Controllers
         {
             _context = context;
         }
+
+        [HttpPost("StartShift")]
+        public async Task<IActionResult> StartShift([FromServices]AppDbContext context, long id, TimestampDTO time)
+        {
+            try
+            {
+                var data = await ShiftQueries.StartShift(context, id, time.Timestamp);
+                return Ok(data);
+            }
+            catch (CustomException ex) {
+                switch (ex.Type) 
+                {
+                    case ErrorType.NotFound: return BadRequest(new { error = "Неверно введен номер сотрудника" });
+                    case ErrorType.DateIncorrect: return BadRequest(new { error = "У сотрудника не введен конец смена" });
+                    default: return BadRequest();
+                }
+            }
+        }
+        
     }
 }
