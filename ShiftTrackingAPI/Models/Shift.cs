@@ -12,11 +12,11 @@ namespace ShiftTrackingAPI.Models
         /// <summary>
         /// Время конца работы
         /// </summary>
-        public DateTime To { get; set; }
+        public DateTime? To { get; set; }
         /// <summary>
         /// отработанные часы 
         /// </summary>
-        public double WorkTime { get; set; }
+        public double? WorkTime { get; set; }
         /// <summary>
         /// внешний ключ к сотрудникам
         /// </summary>
