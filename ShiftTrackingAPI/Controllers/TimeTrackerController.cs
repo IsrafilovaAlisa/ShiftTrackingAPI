@@ -55,9 +55,14 @@ namespace ShiftTrackingAPI.Controllers
             }
         }
         [HttpGet("GetStatisticViolation")]
-        public async Task<IActionResult> GetStatisticViolation([FromServices] AppDbContext context, [FromQuery] Employee obj)
+        public async Task<IActionResult> GetStatisticViolation([FromServices] AppDbContext context, [FromQuery] long id)
         {
-            return Ok(new { data = StatisticQueries.CalculateViolationsThisMonth(context, obj) });
+            var data = await StatisticQueries.GetEmployeeViolations(context, id);
+            if(data == null)
+            {
+                return BadRequest(new { error = "Неверно введен номер сотрудника" });
+            }
+            return Ok(new { data });
         }
     }
 }
