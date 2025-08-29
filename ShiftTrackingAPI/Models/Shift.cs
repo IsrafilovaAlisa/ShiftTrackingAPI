@@ -16,7 +16,7 @@ namespace ShiftTrackingAPI.Models
         /// <summary>
         /// отработанные часы 
         /// </summary>
-        public double? WorkTime { get; set; }
+        public double? WorkTimeHours { get; set; }
 
         /// <summary>
         /// Флаг на честно отработанную смену
