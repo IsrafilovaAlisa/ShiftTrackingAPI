@@ -32,7 +32,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = id,
                 From = time,
                 To = null,
-                 WorkTime= null
+                WorkTimeHours= null
             };
 
             context.shifts.Add(newShift);

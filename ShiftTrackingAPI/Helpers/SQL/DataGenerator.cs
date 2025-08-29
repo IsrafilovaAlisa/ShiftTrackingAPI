@@ -45,7 +45,7 @@ namespace ShiftTrackingAPI.Helpers.SQL
                             EmployeeId = employee.Id,
                             From = startTime,
                             To = endTime,
-                            WorkTime= (endTime - startTime).TotalHours
+                            WorkTimeHours= (endTime - startTime).TotalHours
                         });
                     }
                 }
