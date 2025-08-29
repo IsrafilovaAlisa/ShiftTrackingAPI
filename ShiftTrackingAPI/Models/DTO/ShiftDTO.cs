@@ -13,5 +13,6 @@ namespace ShiftTrackingAPI.Models.DTO
         [Required(ErrorMessage = "Укажите время конца смены")]
         public DateTime? To { get; set; }
         public double? WorkTimeHours { get; set; }
+        public bool? IsViolation { get; set; }
     }
 }
