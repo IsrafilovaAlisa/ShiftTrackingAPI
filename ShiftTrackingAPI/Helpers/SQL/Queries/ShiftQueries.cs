@@ -2,7 +2,6 @@
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,7 +31,8 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = id,
                 From = time,
                 To = null,
-                WorkTimeHours= null
+                WorkTimeHours= null,
+                IsViolation = false,
             };
 
             context.shifts.Add(newShift);
@@ -44,7 +44,8 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = newShift.EmployeeId,
                 From = newShift.From,
                 To = null,
-                WorkTimeHours= null
+                WorkTimeHours= null,
+                IsViolation = false,
             };
         }
         public static async Task<ShiftDTO> EndShift(AppDbContext context, long id, DateTime time)
