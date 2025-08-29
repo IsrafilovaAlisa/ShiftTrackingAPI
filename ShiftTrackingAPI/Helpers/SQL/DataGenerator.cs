@@ -40,13 +40,17 @@ namespace ShiftTrackingAPI.Helpers.SQL
                             ? startTime.AddHours(10 + random.Next(4)) // 10-14 часов для тестировщиков
                             : startTime.AddHours(8 + random.Next(3)); // 8-11 часов для остальных
 
-                        context.shifts.Add(new Shift
+                        var shift = new Shift
                         {
                             EmployeeId = employee.Id,
                             From = startTime,
                             To = endTime,
-                            WorkTimeHours= (endTime - startTime).TotalHours
-                        });
+                            WorkTimeHours = (endTime - startTime).TotalHours
+                        };
+                        shift.IsViolation = Violation.IsViolation(shift, employee.Position);
+
+                        context.shifts.Add(shift);
+
                     }
                 }
 
