@@ -69,6 +69,10 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
             activeShift.To = time;
             activeShift.WorkTimeHours = (activeShift.To.Value - activeShift.From).TotalHours;
             activeShift.IsViolation = Violation.IsViolation(activeShift, employee.Position);
+            if(activeShift.IsViolation == true)
+            {
+                throw new CustomException(ErrorType.DateIncorrect);
+            }
             await context.SaveChangesAsync();
 
             return new ShiftDTO
