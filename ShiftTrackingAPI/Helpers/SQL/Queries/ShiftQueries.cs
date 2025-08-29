@@ -44,7 +44,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = newShift.EmployeeId,
                 From = newShift.From,
                 To = null,
-                WorkTime= null
+                WorkTimeHours= null
             };
         }
         public static async Task<ShiftDTO> EndShift(AppDbContext context, long id, DateTime time)
@@ -75,7 +75,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = id,
                 From = activeShift.From,
                 To = activeShift.To,
-                WorkTime = (activeShift.To - activeShift.From)?.TotalHours
+                WorkTimeHours = (activeShift.To - activeShift.From)?.TotalHours
             };
         }
     }
