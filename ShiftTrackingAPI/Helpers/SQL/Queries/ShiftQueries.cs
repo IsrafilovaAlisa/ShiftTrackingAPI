@@ -67,7 +67,8 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
             }
 
             activeShift.To = time;
-
+            activeShift.WorkTimeHours = (activeShift.To.Value - activeShift.From).TotalHours;
+            activeShift.IsViolation = Violation.IsViolation(activeShift, employee.Position);
             await context.SaveChangesAsync();
 
             return new ShiftDTO
@@ -76,7 +77,8 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = id,
                 From = activeShift.From,
                 To = activeShift.To,
-                WorkTimeHours = (activeShift.To - activeShift.From)?.TotalHours
+                WorkTimeHours = activeShift.WorkTimeHours,
+                IsViolation = activeShift.IsViolation
             };
         }
     }
