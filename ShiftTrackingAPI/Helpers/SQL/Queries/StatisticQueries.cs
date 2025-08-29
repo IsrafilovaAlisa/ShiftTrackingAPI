@@ -22,11 +22,11 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
 
-            var monthlyShifts = employee.shifts
-                .Where(s => s.From.Month == currentMonth && s.From.Year == currentYear)
-                .ToList();
-
-            var violations = monthlyShifts.Count(shift => Violation.IsViolation(shift, employee.Position));
+            var violationCount = employee.shifts
+        .Where(s => s.From.Month == currentMonth &&
+                   s.From.Year == currentYear &&
+                   s.To != null) // учитываем ТОЛЬКО закрытые смены
+        .Count(s => s.IsViolation == true); //Если нарушение есть
 
             return new ViolationEmployeeDTO
             {
@@ -35,7 +35,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 FirstName = employee.FirstName,
                 MiddleName = employee.MiddleName,
                 Position = employee.Position,
-                Violations = violations
+                Violations = violationCount
             };
         }
     }
