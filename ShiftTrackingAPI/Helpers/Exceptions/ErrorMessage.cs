@@ -8,7 +8,9 @@
             {
                 ErrorType.NotFound => "Сотрудник с идентификатором {0} не найден",
                 ErrorType.DataIncorrect => "Введены неверные данные",
-                ErrorType.DateIncorrect => "Некорректно ведена дата",
+                ErrorType.DateFromIncorrect => "У сотрудника не введен конец смены",
+                ErrorType.DateToIncorrect => "У сотрудника не введено начало смены",
+                ErrorType.DateIncorrect => "Некорректно введена дата",
                 _ => "дефолт ошибка"
             };
             return string.Format(template, args);
