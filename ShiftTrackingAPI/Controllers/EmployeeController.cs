@@ -20,22 +20,16 @@ namespace ShiftTrackingAPI.Controllers
             _context = context;
         }
         [HttpGet("GetEmployee")]
-        public async Task<IActionResult> GetEmployee([FromServices] AppDbContext context,  [FromQuery]Position? position)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
+        public async Task<List<ViolationEmployeeDTO>> GetEmployee([FromServices] AppDbContext context,  [FromQuery]Position? position)
         {
-            if(position != null)
-            {
-                if (!Enum.IsDefined(typeof(Position), position))
-                {
-                    return BadRequest(new { error = "Нет такой должности" });
-                }
-            }
-            var result = await EmployeeQueries.GetEmployee(context, position);
-            return Ok(new { data = result });
+            return await EmployeeQueries.GetEmployee(context, position);
         }
         [HttpGet("Positions")]
-        public ActionResult<IEnumerable<string>> GetPositions()
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
+        public IEnumerable<string> GetPositions()
         {
-            return Ok(Enum.GetNames(typeof(Position)));
+            return (Enum.GetNames(typeof(Position)));
         }
 
         [HttpPost("CreateEmployee")]
