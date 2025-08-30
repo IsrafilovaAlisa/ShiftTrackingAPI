@@ -8,7 +8,6 @@ using ShiftTrackingAPI.Models.DTO.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-#nullable enable
 namespace ShiftTrackingAPI.Controllers
 {
     [ApiController]
@@ -38,32 +37,28 @@ namespace ShiftTrackingAPI.Controllers
         {
             return Ok(Enum.GetNames(typeof(Position)));
         }
+
         [HttpPost("CreateEmployee")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<ActionResult<EmployeeResponseDTO>> CreateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj)
+        public async Task<EmployeeDTO> CreateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj)
         {
-            return Ok(new { data = await EmployeeQueries.CreateEmployee(context, obj) });
+            return await EmployeeQueries.CreateEmployee(context, obj);
         }
+
         [HttpPut("UpdateEmployee")]
-        public async Task<IActionResult> UpdateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj, [FromQuery]long id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public async Task<EmployeeDTO> UpdateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj, [FromQuery]long id)
         {
-            var data = await EmployeeQueries.UpdateEmployee(context, obj, id);
-            if (string.IsNullOrWhiteSpace(obj.LastName) || string.IsNullOrWhiteSpace(obj.FirstName) || !Enum.IsDefined(typeof(Position), obj.Position) || data == null)
-            {
-                return BadRequest(new { error = "Неверно введены данные" });
-            }
-            return Ok(new { data });
+            return await EmployeeQueries.UpdateEmployee(context, obj, id);
         }
         [HttpDelete("DeleteEmployee")]
-        public async Task<IActionResult> DeleteEmployee([FromServices] AppDbContext context, [FromQuery] long id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public async Task<string> DeleteEmployee([FromServices] AppDbContext context, [FromQuery] long id)
         {
-            var data = await EmployeeQueries.DeleteEmployee(context, id);
-            if(data == null)
-            {
-                return BadRequest(new { error = "Сотрудника в списке нет" });
-            }
-            return Ok(new { data });
+            return await EmployeeQueries.DeleteEmployee(context, id);
         }
     }
 }

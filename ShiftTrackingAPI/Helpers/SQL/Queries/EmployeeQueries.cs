@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShiftTrackingAPI.Helpers.Exceptions;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
@@ -79,7 +80,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
             var existingEmployee = await context.employees.FindAsync(id);
             if (existingEmployee == null)
             {
-                return null;
+                throw new CustomException(ErrorType.NotFound, id);
             }
 
             existingEmployee.LastName = obj.LastName;
@@ -101,11 +102,11 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
             var existingEmployee = await context.employees.FindAsync(id);
             if (existingEmployee == null)
             {
-                return null;
+                throw new CustomException(ErrorType.NotFound, id);
             }
             context.employees.Remove(existingEmployee);
             await context.SaveChangesAsync();
-            return "Сотрудник удалёне";
+            return "Сотрудник удалён";
         }
     }
 }
