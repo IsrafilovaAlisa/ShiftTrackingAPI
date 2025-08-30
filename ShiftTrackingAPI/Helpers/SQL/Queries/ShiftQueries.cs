@@ -33,7 +33,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 From = time,
                 To = null,
                 WorkTimeHours= null,
-                IsViolation = false,
+                IsViolation = null,
             };
 
             context.shifts.Add(newShift);
@@ -46,7 +46,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 From = newShift.From,
                 To = null,
                 WorkTimeHours= null,
-                IsViolation = false,
+                IsViolation = null,
             };
         }
         public static async Task<ShiftDTO> EndShift(AppDbContext context, long id, DateTime time)
