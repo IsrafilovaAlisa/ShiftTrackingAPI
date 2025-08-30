@@ -5,9 +5,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Logging;
-using ShiftTrackingAPI.Helpers.Exceptions;
 
-namespace ShiftTrackingAPI.Helpers
+namespace ShiftTrackingAPI.Helpers.Exceptions
 {
     public class HandleException
     {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using ShiftTrackingAPI.Helpers;
+using ShiftTrackingAPI.Helpers.Exceptions;
 using ShiftTrackingAPI.Helpers.SQL;
 using System;
 using System.Linq;
