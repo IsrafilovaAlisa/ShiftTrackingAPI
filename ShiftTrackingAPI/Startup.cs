@@ -82,6 +82,8 @@ namespace ShiftTrackingAPI
 
             app.UseAuthorization();
 
+            app.UseMiddleware<HandleException>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
