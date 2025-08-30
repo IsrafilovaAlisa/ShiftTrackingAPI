@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShiftTrackingAPI.Helpers.Exceptions;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
@@ -17,13 +18,13 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
 
             if (employee == null)
             {
-                throw new CustomException(ErrorType.NotFound);
+                throw new CustomException(ErrorType.NotFound, id);
             }
 
             var activeShift = employee.shifts.FirstOrDefault(s => s.To == null);
             if (activeShift != null)
             {
-                throw new CustomException(ErrorType.DateIncorrect);
+                throw new CustomException(ErrorType.DateFromIncorrect);
             }
 
             var newShift = new Shift
@@ -56,23 +57,23 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
 
             if (employee == null)
             {
-                throw new CustomException(ErrorType.NotFound);
+                throw new CustomException(ErrorType.NotFound, id);
             }
 
             var activeShift = employee.shifts.FirstOrDefault(s => s.To == null);
 
             if (activeShift == null)
             {
-                throw new CustomException(ErrorType.DateIncorrect);
+                throw new CustomException(ErrorType.DateFromIncorrect);
             }
 
             activeShift.To = time;
             activeShift.WorkTimeHours = (activeShift.To.Value - activeShift.From).TotalHours;
-            activeShift.IsViolation = Violation.IsViolation(activeShift, employee.Position);
-            if(activeShift.IsViolation == true)
+            if(activeShift.WorkTimeHours < 0)
             {
                 throw new CustomException(ErrorType.DateIncorrect);
             }
+            activeShift.IsViolation = Violation.IsViolation(activeShift, employee.Position);
             await context.SaveChangesAsync();
 
             return new ShiftDTO
