@@ -31,14 +31,12 @@ namespace ShiftTrackingAPI.Controllers
             return await ShiftQueries.EndShift(context, id, time.Timestamp);
         }
         [HttpGet("GetStatisticViolation")]
-        public async Task<IActionResult> GetStatisticViolation([FromServices] AppDbContext context, [FromQuery] long id)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ShiftDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        public async Task<ViolationEmployeeDTO> GetStatisticViolation([FromServices] AppDbContext context, [FromQuery] long id)
         {
-            var data = await StatisticQueries.GetEmployeeViolations(context, id);
-            if(data == null)
-            {
-                return BadRequest(new { error = "Неверно введен номер сотрудника" });
-            }
-            return Ok(new { data });
+            return await StatisticQueries.GetEmployeeViolations(context, id);
+            
         }
     }
 }

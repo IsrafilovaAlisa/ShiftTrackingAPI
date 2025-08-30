@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShiftTrackingAPI.Helpers.Exceptions;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace ShiftTrackingAPI.Helpers.SQL.Queries
@@ -17,7 +19,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (employee == null)
             {
-                return null;
+                throw new CustomException(ErrorType.NotFound, id); 
             }
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
