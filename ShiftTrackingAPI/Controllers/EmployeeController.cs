@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ShiftTrackingAPI.Helpers.SQL;
 using ShiftTrackingAPI.Helpers.SQL.Queries;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
-using ShiftTrackingAPI.Models.DTO.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+#nullable enable
 namespace ShiftTrackingAPI.Controllers
 {
     [ApiController]
@@ -20,39 +19,51 @@ namespace ShiftTrackingAPI.Controllers
             _context = context;
         }
         [HttpGet("GetEmployee")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
-        public async Task<List<ViolationEmployeeDTO>> GetEmployee([FromServices] AppDbContext context,  [FromQuery]Position? position)
+        public async Task<IActionResult> GetEmployee([FromServices] AppDbContext context,  [FromQuery]Position? position)
         {
-            return await EmployeeQueries.GetEmployee(context, position);
+            if(position != null)
+            {
+                if (!Enum.IsDefined(typeof(Position), position))
+                {
+                    return BadRequest(new { error = "Нет такой должности" });
+                }
+            }
+            var result = await EmployeeQueries.GetEmployee(context, position);
+            return Ok(new { data = result });
         }
         [HttpGet("Positions")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
-        public IEnumerable<string> GetPositions()
+        public ActionResult<IEnumerable<string>> GetPositions()
         {
-            return (Enum.GetNames(typeof(Position)));
+            return Ok(Enum.GetNames(typeof(Position)));
         }
-
         [HttpPost("CreateEmployee")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<EmployeeDTO> CreateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj)
+        public async Task<IActionResult> CreateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj)
         {
-            return await EmployeeQueries.CreateEmployee(context, obj);
+            if (string.IsNullOrWhiteSpace(obj.LastName) || string.IsNullOrWhiteSpace(obj.FirstName) || !Enum.IsDefined(typeof(Position), obj.Position))
+            {
+                return BadRequest(new { error = "Неверно введены данные" });
+            }
+            return Ok(new { data = await EmployeeQueries.CreateEmployee(context, obj) });
         }
-
         [HttpPut("UpdateEmployee")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<EmployeeDTO> UpdateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj, [FromQuery]long id)
+        public async Task<IActionResult> UpdateEmployee([FromServices] AppDbContext context, [FromBody] EmployeeDTO obj, [FromQuery]long id)
         {
-            return await EmployeeQueries.UpdateEmployee(context, obj, id);
+            var data = await EmployeeQueries.UpdateEmployee(context, obj, id);
+            if (string.IsNullOrWhiteSpace(obj.LastName) || string.IsNullOrWhiteSpace(obj.FirstName) || !Enum.IsDefined(typeof(Position), obj.Position) || data == null)
+            {
+                return BadRequest(new { error = "Неверно введены данные" });
+            }
+            return Ok(new { data });
         }
         [HttpDelete("DeleteEmployee")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(EmployeeDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<string> DeleteEmployee([FromServices] AppDbContext context, [FromQuery] long id)
+        public async Task<IActionResult> DeleteEmployee([FromServices] AppDbContext context, [FromQuery] long id)
         {
-            return await EmployeeQueries.DeleteEmployee(context, id);
+            var data = await EmployeeQueries.DeleteEmployee(context, id);
+            if(data == null)
+            {
+                return BadRequest(new { error = "Сотрудника в списке нет" });
+            }
+            return Ok(new { data });
         }
     }
 }

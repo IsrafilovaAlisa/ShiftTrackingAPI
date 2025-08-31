@@ -51,13 +51,10 @@ namespace ShiftTrackingAPI.Migrations
                     b.Property<DateTime>("From")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool?>("IsViolation")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime?>("To")
                         .HasColumnType("TEXT");
 
-                    b.Property<double?>("WorkTimeHours")
+                    b.Property<double?>("WorkTime")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");

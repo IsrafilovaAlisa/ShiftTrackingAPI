@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShiftTrackingAPI.Helpers.Exceptions;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,13 +18,13 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
 
             if (employee == null)
             {
-                throw new CustomException(ErrorType.NotFound, id);
+                throw new CustomException(ErrorType.NotFound);
             }
 
             var activeShift = employee.shifts.FirstOrDefault(s => s.To == null);
             if (activeShift != null)
             {
-                throw new CustomException(ErrorType.DateFromIncorrect);
+                throw new CustomException(ErrorType.DateIncorrect);
             }
 
             var newShift = new Shift
@@ -32,8 +32,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = id,
                 From = time,
                 To = null,
-                WorkTimeHours= null,
-                IsViolation = null,
+                 WorkTime= null
             };
 
             context.shifts.Add(newShift);
@@ -45,8 +44,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = newShift.EmployeeId,
                 From = newShift.From,
                 To = null,
-                WorkTimeHours= null,
-                IsViolation = null,
+                WorkTime= null
             };
         }
         public static async Task<ShiftDTO> EndShift(AppDbContext context, long id, DateTime time)
@@ -57,23 +55,18 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
 
             if (employee == null)
             {
-                throw new CustomException(ErrorType.NotFound, id);
+                throw new CustomException(ErrorType.NotFound);
             }
 
             var activeShift = employee.shifts.FirstOrDefault(s => s.To == null);
 
             if (activeShift == null)
             {
-                throw new CustomException(ErrorType.DateFromIncorrect);
+                throw new CustomException(ErrorType.DateIncorrect);
             }
 
             activeShift.To = time;
-            activeShift.WorkTimeHours = (activeShift.To.Value - activeShift.From).TotalHours;
-            if(activeShift.WorkTimeHours < 0)
-            {
-                throw new CustomException(ErrorType.DateIncorrect);
-            }
-            activeShift.IsViolation = Violation.IsViolation(activeShift, employee.Position);
+
             await context.SaveChangesAsync();
 
             return new ShiftDTO
@@ -82,8 +75,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 EmployeeId = id,
                 From = activeShift.From,
                 To = activeShift.To,
-                WorkTimeHours = activeShift.WorkTimeHours,
-                IsViolation = activeShift.IsViolation
+                WorkTime = (activeShift.To - activeShift.From)?.TotalHours
             };
         }
     }

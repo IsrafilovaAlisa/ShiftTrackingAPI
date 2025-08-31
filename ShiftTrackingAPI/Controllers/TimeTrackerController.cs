@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ShiftTrackingAPI.Helpers;
 using ShiftTrackingAPI.Helpers.SQL;
 using ShiftTrackingAPI.Helpers.SQL.Queries;
+using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
-using ShiftTrackingAPI.Models.DTO.Response;
+using System;
 using System.Threading.Tasks;
 
 namespace ShiftTrackingAPI.Controllers
@@ -19,24 +20,49 @@ namespace ShiftTrackingAPI.Controllers
         }
 
         [HttpPost("StartShift")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ShiftDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<ShiftDTO> StartShift([FromServices]AppDbContext context, long id, TimestampDTO time)
+        public async Task<IActionResult> StartShift([FromServices]AppDbContext context, long id, TimestampDTO time)
         {
-            return await ShiftQueries.StartShift(context, id, time.Timestamp);
+            try
+            {
+                var data = await ShiftQueries.StartShift(context, id, time.Timestamp);
+                return Ok(data);
+            }
+            catch (CustomException ex) {
+                switch (ex.Type) 
+                {
+                    case ErrorType.NotFound: return BadRequest(new { error = "Неверно введен номер сотрудника" });
+                    case ErrorType.DateIncorrect: return BadRequest(new { error = "У сотрудника не введен конец смена" });
+                    default: return BadRequest();
+                }
+            }
         }
         [HttpPost("EndShift")]
-        public async Task<ShiftDTO> EndFinish([FromServices]AppDbContext context, long id, TimestampDTO time)
+        public async Task<IActionResult> EndFinish([FromServices]AppDbContext context, long id, TimestampDTO time)
         {
-            return await ShiftQueries.EndShift(context, id, time.Timestamp);
+            try
+            {
+                var data = await ShiftQueries.EndShift(context, id, time.Timestamp);
+                return Ok(data);
+            }
+            catch (CustomException ex)
+            {
+                switch (ex.Type)
+                {
+                    case ErrorType.NotFound: return BadRequest(new { error = "Неверно введен номер сотрудника" });
+                    case ErrorType.DateIncorrect: return BadRequest(new { error = "У сотрудника не введено начало смены" });
+                    default: return BadRequest();
+                }
+            }
         }
         [HttpGet("GetStatisticViolation")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ShiftDTO))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
-        public async Task<ViolationEmployeeDTO> GetStatisticViolation([FromServices] AppDbContext context, [FromQuery] long id)
+        public async Task<IActionResult> GetStatisticViolation([FromServices] AppDbContext context, [FromQuery] long id)
         {
-            return await StatisticQueries.GetEmployeeViolations(context, id);
-            
+            var data = await StatisticQueries.GetEmployeeViolations(context, id);
+            if(data == null)
+            {
+                return BadRequest(new { error = "Неверно введен номер сотрудника" });
+            }
+            return Ok(new { data });
         }
     }
 }

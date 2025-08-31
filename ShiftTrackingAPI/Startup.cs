@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using ShiftTrackingAPI.Helpers;
-using ShiftTrackingAPI.Helpers.Exceptions;
 using ShiftTrackingAPI.Helpers.SQL;
 using System;
 using System.Linq;
@@ -76,13 +75,12 @@ namespace ShiftTrackingAPI
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ShiftTrackingAPI v1"));
                 
             }
-            else app.UseHttpsRedirection();
+
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
-
-            app.UseMiddleware<HandleException>();
 
             app.UseEndpoints(endpoints =>
             {

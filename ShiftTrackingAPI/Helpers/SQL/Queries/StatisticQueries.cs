@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShiftTrackingAPI.Helpers.Exceptions;
 using ShiftTrackingAPI.Models;
 using ShiftTrackingAPI.Models.DTO;
 using System;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace ShiftTrackingAPI.Helpers.SQL.Queries
@@ -19,16 +17,16 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 .FirstOrDefaultAsync(e => e.Id == id);
             if (employee == null)
             {
-                throw new CustomException(ErrorType.NotFound, id); 
+                return null;
             }
             var currentMonth = DateTime.Now.Month;
             var currentYear = DateTime.Now.Year;
 
-            var violationCount = employee.shifts
-        .Where(s => s.From.Month == currentMonth &&
-                   s.From.Year == currentYear &&
-                   s.To != null) // учитываем ТОЛЬКО закрытые смены
-        .Count(s => s.IsViolation == true); //Если нарушение есть
+            var monthlyShifts = employee.shifts
+                .Where(s => s.From.Month == currentMonth && s.From.Year == currentYear)
+                .ToList();
+
+            var violations = monthlyShifts.Count(shift => Violation.IsViolation(shift, employee.Position));
 
             return new ViolationEmployeeDTO
             {
@@ -37,7 +35,7 @@ namespace ShiftTrackingAPI.Helpers.SQL.Queries
                 FirstName = employee.FirstName,
                 MiddleName = employee.MiddleName,
                 Position = employee.Position,
-                Violations = violationCount
+                Violations = violations
             };
         }
     }
